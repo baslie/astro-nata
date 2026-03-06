@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<script src="http://code.jquery.com/jquery-latest.js"></script>
+		<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.12.0.css" type="text/css" media="screen" />
+		<script type="text/javascript" src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
+		<script type="text/javascript" src="../build/astrochart.js"></script>	
+		
+		<script>
+			window.onload = function( ) {							
+				test( "radix", function( ) {										
+					
+					var toPoints = {
+						"Sun":[0], 
+						"Moon":[91], 
+						"Neptune":[122],
+						"As":[330],
+						"Ic":[90]
+					};
+					
+					var points = {
+						"Sun":[0], 
+						"Moon":[91], 
+						"Neptune":[122]						
+					}
+					
+					var settings = {};
+					settings.aspects = { 
+							"conjunction":{"degree":0, "orbit":10, "color":"transparent"}, 
+							"square":{"degree":90, "orbit":8, "color":"#FF4500"}, 
+							"trine":{"degree":120, "orbit":8, "color":"#27AE60"},
+							"opposition":{"degree":180, "orbit":10, "color":"#27AE60"}
+						};
+					
+					var calculator = new astrology.AspectCalculator( toPoints, settings);
+																				
+					deepEqual(calculator.radix( points ), [
+							  {
+							    "aspect": {
+							  "color": "#FF4500",
+							  "degree": 90,
+							  "name": "square",
+							  "orbit": 8
+							},
+							"point": {
+							  "name": "Sun",
+							  "position": 0
+							},
+							"precision": "0.0000",
+							"toPoint": {
+							  "name": "Ic",
+							  "position": 90
+							    }
+							  },
+							  {
+							    "aspect": {
+							  "color": "#FF4500",
+							  "degree": 90,
+							  "name": "square",
+							  "orbit": 8
+							},
+							"point": {
+							  "name": "Sun",
+							  "position": 0
+							},
+							"precision": "1.0000",
+							"toPoint": {
+							  "name": "Moon",
+							  "position": 91
+							    }
+							  },
+							  {
+							    "aspect": {
+							  "color": "#FF4500",
+							  "degree": 90,
+							  "name": "square",
+							  "orbit": 8
+							},
+							"point": {
+							  "name": "Moon",
+							  "position": 91
+							},
+							"precision": "1.0000",
+							"toPoint": {
+							  "name": "Sun",
+							  "position": 0
+							    }
+							  },
+							  {
+							    "aspect": {
+							  "color": "#27AE60",
+							  "degree": 120,
+							  "name": "trine",
+							  "orbit": 8
+							},
+							"point": {
+							  "name": "Moon",
+							  "position": 91
+							},
+							"precision": "1.0000",
+							"toPoint": {
+							  "name": "As",
+							  "position": 330
+							    }
+							  },
+							  {
+							    "aspect": {
+							  "color": "transparent",
+							  "degree": 0,
+							  "name": "conjunction",
+							  "orbit": 10
+							},
+							"point": {
+							  "name": "Moon",
+							  "position": 91
+							},
+							"precision": "1.0000",
+							"toPoint": {
+							  "name": "Ic",
+							  "position": 90
+							    }
+							  },
+							  {
+							    "aspect": {
+							  "color": "#27AE60",
+							  "degree": 120,
+							  "name": "trine",
+							  "orbit": 8
+							},
+							"point": {
+							  "name": "Sun",
+							  "position": 0
+							},
+							"precision": "2.0000",
+							"toPoint": {
+							  "name": "Neptune",
+							  "position": 122
+							    }
+							  },
+							  {
+							    "aspect": {
+							  "color": "#27AE60",
+							  "degree": 120,
+							  "name": "trine",
+							  "orbit": 8
+							},
+							"point": {
+							  "name": "Neptune",
+							  "position": 122
+							},
+							"precision": "2.0000",
+							"toPoint": {
+							  "name": "Sun",
+							  "position": 0
+							    }
+							  }
+							] );					
+				});	
+				
+				test( "transit1", function( ) {
+					
+					var toPoints = {
+						"Sun":[0], 						
+					};
+					
+					var transit = {
+						"Sun":[1], 											
+					}
+					
+					var settings = {};
+					settings.aspects = { 
+							"conjunction":{"degree":0, "orbit":10, "color":"transparent"}, 
+							"square":{"degree":90, "orbit":8, "color":"#FF4500"}, 
+							"trine":{"degree":120, "orbit":8, "color":"#27AE60"},
+							"opposition":{"degree":180, "orbit":10, "color":"#27AE60"}
+						};
+						
+					var calculator = new astrology.AspectCalculator( toPoints, settings);
+																																
+					deepEqual(calculator.transit( transit ), [
+										  {
+										    "aspect": {
+										      "color": "transparent",
+										      "degree": 0,
+										      "name": "conjunction",
+										      "orbit": 10
+										    },
+										    "point": {
+										      "name": "Sun",
+										      "position": 1
+										    },
+										    "precision": "1.0000",
+										    "toPoint": {
+										      "name": "Sun",
+										      "position": 0
+										    }
+										  }
+										]);
+										
+				});
+				
+				test( "transit2", function( ) {
+					
+					var toPoints = {
+						"Sun":[0], 						
+					};
+					
+					var transit = {
+						"Sun":[359], 											
+					}
+					
+					var settings = {};
+					settings.aspects = { 
+							"conjunction":{"degree":0, "orbit":10, "color":"transparent"}, 
+							"square":{"degree":90, "orbit":8, "color":"#FF4500"}, 
+							"trine":{"degree":120, "orbit":8, "color":"#27AE60"},
+							"opposition":{"degree":180, "orbit":10, "color":"#27AE60"}
+						};
+						
+					var calculator = new astrology.AspectCalculator( toPoints, settings);
+																				
+					deepEqual(calculator.transit( transit ), [
+									  {
+									    "aspect": {
+									      "color": "transparent",
+									      "degree": 0,
+									      "name": "conjunction",
+									      "orbit": 10
+									    },
+									    "point": {
+									      "name": "Sun",
+									      "position": 359
+									    },
+									    "precision": "-1.0000",
+									    "toPoint": {
+									      "name": "Sun",
+									      "position": 0
+									    }
+									  }
+									]);										
+				});
+				
+				test( "transit3", function( ) {
+					
+					var toPoints = {
+						"Sun":[0], 						
+					};
+					
+					var transit = {
+						"Sun":[91], 											
+					}
+					
+					var settings = {};
+					settings.aspects = { 
+							"conjunction":{"degree":0, "orbit":10, "color":"transparent"}, 
+							"square":{"degree":90, "orbit":8, "color":"#FF4500"}, 
+							"trine":{"degree":120, "orbit":8, "color":"#27AE60"},
+							"opposition":{"degree":180, "orbit":10, "color":"#27AE60"}
+						};
+						
+					var calculator = new astrology.AspectCalculator( toPoints, settings);
+																				
+					deepEqual(calculator.transit( transit ), 	
+								[
+								  {
+								    "aspect": {
+								  "color": "#FF4500",
+								  "degree": 90,
+								  "name": "square",
+								  "orbit": 8
+								},
+								"point": {
+								  "name": "Sun",
+								  "position": 91
+								},
+								"precision": "1.0000",
+								"toPoint": {
+								  "name": "Sun",
+								  "position": 0
+								    }
+								  }
+								]);
+																		
+				});
+				
+				test( "transit4", function( ) {
+					
+					var toPoints = {
+						"Sun":[0], 						
+					};
+					
+					var transit = {
+						"Sun":[89], 											
+					}
+					
+					var settings = {};
+					settings.aspects = { 
+							"conjunction":{"degree":0, "orbit":10, "color":"transparent"}, 
+							"square":{"degree":90, "orbit":8, "color":"#FF4500"}, 
+							"trine":{"degree":120, "orbit":8, "color":"#27AE60"},
+							"opposition":{"degree":180, "orbit":10, "color":"#27AE60"}
+						};
+						
+					var calculator = new astrology.AspectCalculator( toPoints, settings);
+																				
+					deepEqual(calculator.transit( transit ), [
+								  {
+								    "aspect": {
+								  "color": "#FF4500",
+								  "degree": 90,
+								  "name": "square",
+								  "orbit": 8
+								},
+								"point": {
+								  "name": "Sun",
+								  "position": 89
+								},
+								"precision": "-1.0000",
+								"toPoint": {
+								  "name": "Sun",
+								  "position": 0
+								    }
+								  }
+								]);
+										
+				});
+				
+				test( "transit5", function( ) {
+					
+					var toPoints = {
+						"Sun":[0], 						
+					};
+					
+					var transit = {
+						"Sun":[181], 											
+					}
+					
+					var settings = {};
+					settings.aspects = { 
+							"conjunction":{"degree":0, "orbit":10, "color":"transparent"}, 
+							"square":{"degree":90, "orbit":8, "color":"#FF4500"}, 
+							"trine":{"degree":120, "orbit":8, "color":"#27AE60"},
+							"opposition":{"degree":180, "orbit":10, "color":"#27AE60"}
+						};
+						
+					var calculator = new astrology.AspectCalculator( toPoints, settings);
+																				
+					deepEqual(calculator.transit( transit ), [
+							  {
+							    "aspect": {
+							      "color": "#27AE60",
+							      "degree": 180,
+							      "name": "opposition",
+							      "orbit": 10
+							    },
+							    "point": {
+							      "name": "Sun",
+							      "position": 181
+							    },
+							    "precision": "1.0000",
+							    "toPoint": {
+							      "name": "Sun",
+							      "position": 0
+							    }
+							  }
+							]);
+										
+				});
+				
+				test( "transit6", function( ) {
+					
+					var toPoints = {
+						"Sun":[0], 						
+					};
+					
+					var transit = {
+						"Sun":[179], 											
+					}
+					
+					var settings = {};
+					settings.aspects = { 
+							"conjunction":{"degree":0, "orbit":10, "color":"transparent"}, 
+							"square":{"degree":90, "orbit":8, "color":"#FF4500"}, 
+							"trine":{"degree":120, "orbit":8, "color":"#27AE60"},
+							"opposition":{"degree":180, "orbit":10, "color":"#27AE60"}
+						};
+						
+					var calculator = new astrology.AspectCalculator( toPoints, settings);
+																				
+					deepEqual(calculator.transit( transit ), [
+						  {
+						    "aspect": {
+						      "color": "#27AE60",
+						      "degree": 180,
+						      "name": "opposition",
+						      "orbit": 10
+						    },
+						    "point": {
+						      "name": "Sun",
+						      "position": 179
+						    },
+						    "precision": "-1.0000",
+						    "toPoint": {
+						      "name": "Sun",
+						      "position": 0
+						    }
+						  }
+						]);
+										
+				});
+				
+				test( "transit7", function( ) {
+					
+					var toPoints = {
+						"Sun":[0], 						
+					};
+					
+					var transit = {
+						"Sun":[271], 											
+					}
+					
+					var settings = {};
+					settings.aspects = { 
+							"conjunction":{"degree":0, "orbit":10, "color":"transparent"}, 
+							"square":{"degree":90, "orbit":8, "color":"#FF4500"}, 
+							"trine":{"degree":120, "orbit":8, "color":"#27AE60"},
+							"opposition":{"degree":180, "orbit":10, "color":"#27AE60"}
+						};
+						
+					var calculator = new astrology.AspectCalculator( toPoints, settings);
+																				
+					deepEqual(calculator.transit( transit ), [
+							  {
+							    "aspect": {
+							      "color": "#FF4500",
+							      "degree": 90,
+							      "name": "square",
+							      "orbit": 8
+							    },
+							    "point": {
+							      "name": "Sun",
+							      "position": 271
+							    },
+							    "precision": "1.0000",
+							    "toPoint": {
+							      "name": "Sun",
+							      "position": 0
+							    }
+							  }
+							]);
+																
+				});
+				
+				test( "transit8", function( ) {
+					
+					var toPoints = {
+						"Sun":[0], 						
+					};
+					
+					var transit = {
+						"Sun":[269], 											
+					}
+					
+					var settings = {};
+					settings.aspects = { 
+							"conjunction":{"degree":0, "orbit":10, "color":"transparent"}, 
+							"square":{"degree":90, "orbit":8, "color":"#FF4500"}, 
+							"trine":{"degree":120, "orbit":8, "color":"#27AE60"},
+							"opposition":{"degree":180, "orbit":10, "color":"#27AE60"}
+						};
+						
+					var calculator = new astrology.AspectCalculator( toPoints, settings);
+																				
+					deepEqual(calculator.transit( transit ), [
+							  {
+							    "aspect": {
+							      "color": "#FF4500",
+							      "degree": 90,
+							      "name": "square",
+							      "orbit": 8
+							    },
+							    "point": {
+							      "name": "Sun",
+							      "position": 269
+							    },
+							    "precision": "-1.0000",
+							    "toPoint": {
+							      "name": "Sun",
+							      "position": 0
+							    }
+							  }
+							]);
+																
+				});
+				
+				test( "transit9", function( ) {
+					
+					var toPoints = {
+						"Sun":[359], 						
+					};
+					
+					var transit = {
+						"Sun":[90], 											
+					};
+					
+					var settings = {};
+					settings.aspects = { 
+							"conjunction":{"degree":0, "orbit":10, "color":"transparent"}, 
+							"square":{"degree":90, "orbit":8, "color":"#FF4500"}, 
+							"trine":{"degree":120, "orbit":8, "color":"#27AE60"},
+							"opposition":{"degree":180, "orbit":10, "color":"#27AE60"}
+						};
+						
+					var calculator = new astrology.AspectCalculator( toPoints, settings);
+																				
+					deepEqual(calculator.transit( transit ), [{
+					    "aspect": {
+					      "color": "#FF4500",
+					      "degree": 90,
+					      "name": "square",
+					      "orbit": 8
+					    },
+					    "point": {
+					      "name": "Sun",
+					      "position": 90
+					    },
+					    "precision": "1.0000",
+					    "toPoint": {
+					      "name": "Sun",
+					      "position": 359
+					    }
+					  }]);
+																
+				});
+				
+				test( "transit10", function( ) {
+					
+					var toPoints = {
+						"Sun":[359], 						
+					};
+					
+					var transit = {
+						"Sun":[88], 											
+					};
+					
+					var settings = {};
+					settings.aspects = { 
+							"conjunction":{"degree":0, "orbit":10, "color":"transparent"}, 
+							"square":{"degree":90, "orbit":8, "color":"#FF4500"}, 
+							"trine":{"degree":120, "orbit":8, "color":"#27AE60"},
+							"opposition":{"degree":180, "orbit":10, "color":"#27AE60"}
+						};
+						
+					var calculator = new astrology.AspectCalculator( toPoints, settings);
+																				
+					deepEqual(calculator.transit( transit ), [{
+					    "aspect": {
+					      "color": "#FF4500",
+					      "degree": 90,
+					      "name": "square",
+					      "orbit": 8
+					    },
+					    "point": {
+					      "name": "Sun",
+					      "position": 88
+					    },
+					    "precision": "-1.0000",
+					    "toPoint": {
+					      "name": "Sun",
+					      "position": 359
+					    }
+					  }]);
+																
+				});
+				
+				test( "transit11 - speed", function( ) {
+					
+					var toPoints = {
+						"Sun":[0], 						
+					};
+					
+					var transit = {
+						"Sun":[1, 1], 											
+					}
+					
+					var settings = {};
+					settings.aspects = { 
+							"conjunction":{"degree":0, "orbit":10, "color":"transparent"}, 
+							"square":{"degree":90, "orbit":8, "color":"#FF4500"}, 
+							"trine":{"degree":120, "orbit":8, "color":"#27AE60"},
+							"opposition":{"degree":180, "orbit":10, "color":"#27AE60"}
+						};
+						
+					var calculator = new astrology.AspectCalculator( toPoints, settings);
+																				
+					deepEqual(calculator.transit( transit ), [ {
+						    "aspect": {
+						      "color": "transparent",
+						      "degree": 0,
+						      "name": "conjunction",
+						      "orbit": 10
+						    },
+						    "point": {
+						      "name": "Sun",
+						      "position": 1
+						    },
+						    "precision": "1.0000",
+						    "toPoint": {
+						      "name": "Sun",
+						      "position": 0
+						    }
+						  }]);
+										
+				});
+				
+				test( "transit12 - speed", function( ) {
+					
+					var toPoints = {
+						"Sun":[0], 						
+					};
+					
+					var transit = {
+						"Sun":[1, -1], 											
+					}
+					
+					var settings = {};
+					settings.aspects = { 
+							"conjunction":{"degree":0, "orbit":10, "color":"transparent"}, 
+							"square":{"degree":90, "orbit":8, "color":"#FF4500"}, 
+							"trine":{"degree":120, "orbit":8, "color":"#27AE60"},
+							"opposition":{"degree":180, "orbit":10, "color":"#27AE60"}
+						};
+						
+					var calculator = new astrology.AspectCalculator( toPoints, settings);
+																				
+					deepEqual(calculator.transit( transit ), [{
+						    "aspect": {
+						      "color": "transparent",
+						      "degree": 0,
+						      "name": "conjunction",
+						      "orbit": 10
+						    },
+						    "point": {
+						      "name": "Sun",
+						      "position": 1
+						    },
+						    "precision": "-1.0000",
+						    "toPoint": {
+						      "name": "Sun",
+						      "position": 0
+						    }
+						  }]);
+										
+				});
+																																			
+			};// onload
+		</script>
+	</head>
+	<body>
+		<h1 id="qunit-header">chart.js tests</h1>
+		<h2 id="qunit-banner"></h2>
+		<div id="qunit-testrunner-toolbar"></div>
+		<h2 id="qunit-userAgent"></h2>
+		<ol id="qunit-tests"></ol>
+		<div id="qunit-fixture">
+			test markup, will be hidden
+		</div>
+	</body>
+</html>

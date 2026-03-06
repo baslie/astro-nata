@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Натальная карта</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/@geoapify/geocoder-autocomplete/styles/minimal.css">
+</head>
+<body>
+  <div class="container">
+    <div class="form-panel">
+      <h1>Натальная карта</h1>
+      <form id="birthForm">
+<div class="datetime-row">
+          <div class="field">
+            <label for="birthdate">Дата рождения</label>
+            <input type="date" id="birthdate" required>
+          </div>
+          <div class="field">
+            <label for="birthtime">Время рождения</label>
+            <input type="time" id="birthtime" required>
+          </div>
+        </div>
+        <div class="field">
+          <label>Город</label>
+          <div id="city-autocomplete" style="position: relative;">
+            <input class="city-loading" disabled placeholder="Загрузка поиска городов...">
+          </div>
+          <span id="tz-info" class="tz-info"></span>
+        </div>
+        <div class="coords" id="coordsBlock">
+          <fieldset class="coord-group">
+            <legend>Широта</legend>
+            <div class="coord-group__dd">
+              <input type="number" id="lat" step="0.0001" min="-90" max="90" required placeholder="55.7558">
+            </div>
+            <div class="coord-group__dms">
+              <input type="number" id="lat-deg" min="0" max="90" step="1" placeholder="°" class="dms-input dms-deg">
+              <input type="number" id="lat-min" min="0" max="59" step="1" placeholder="'" class="dms-input dms-min">
+              <input type="number" id="lat-sec" min="0" max="59.99" step="0.01" placeholder="&quot;" class="dms-input dms-sec">
+              <select id="lat-dir" class="dms-dir"><option value="N">N</option><option value="S">S</option></select>
+            </div>
+          </fieldset>
+          <fieldset class="coord-group">
+            <legend>Долгота</legend>
+            <div class="coord-group__dd">
+              <input type="number" id="lng" step="0.0001" min="-180" max="180" required placeholder="37.6173">
+            </div>
+            <div class="coord-group__dms">
+              <input type="number" id="lng-deg" min="0" max="180" step="1" placeholder="°" class="dms-input dms-deg">
+              <input type="number" id="lng-min" min="0" max="59" step="1" placeholder="'" class="dms-input dms-min">
+              <input type="number" id="lng-sec" min="0" max="59.99" step="0.01" placeholder="&quot;" class="dms-input dms-sec">
+              <select id="lng-dir" class="dms-dir"><option value="E">E</option><option value="W">W</option></select>
+            </div>
+          </fieldset>
+        </div>
+        <button type="submit">Построить карту</button>
+      </form>
+
+      <div id="info" class="info" hidden>
+        <h2>Результаты</h2>
+        <ul id="infoList"></ul>
+      </div>
+
+      <div class="footer-badge">
+        <span class="footer-badge__title">В программе используется</span>
+        <ul class="footer-badge__list">
+          <li><a href="https://github.com/0xStarcat/CircularNatalHoroscopeJS" target="_blank" rel="noopener">CircularNatalHoroscopeJS</a> — расчёт положений планет, домов и аспектов</li>
+          <li><a href="https://github.com/Kibo/AstroChart" target="_blank" rel="noopener">AstroChart</a> — SVG-визуализация натальной карты</li>
+          <li><a href="https://www.geoapify.com/" target="_blank" rel="noopener">Geoapify</a> — геокодинг и автодополнение городов (бесплатно до 3 000 запросов в день)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="chart-panel">
+      <div id="chart">
+        <div class="chart-placeholder">
+          <span class="chart-placeholder__text">Укажите данные рождения и нажмите «Построить карту»</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/@geoapify/geocoder-autocomplete/dist/index.min.js"></script>
+  <script src="libs/AstroChart/project/build/astrochart.js"></script>
+  <script src="libs/CircularNatalHoroscopeJS/dist/index.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
