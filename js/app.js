@@ -1,6 +1,49 @@
 var Origin = CircularNatalHoroscope.Origin;
 var Horoscope = CircularNatalHoroscope.Horoscope;
 
+// --- Timezone offset select ---
+var tzOffsetSelect = document.getElementById('tz-offset');
+
+function populateTzSelect() {
+  // Default option — auto-detect by coordinates
+  var autoOption = document.createElement('option');
+  autoOption.value = 'auto';
+  autoOption.textContent = 'По умолчанию';
+  autoOption.selected = true;
+  tzOffsetSelect.appendChild(autoOption);
+
+  // UTC-12:00 to UTC+14:00, step 30 min
+  for (var totalMin = -720; totalMin <= 840; totalMin += 30) {
+    var option = document.createElement('option');
+    option.value = totalMin;
+    var sign = totalMin >= 0 ? '+' : '-';
+    var abs = Math.abs(totalMin);
+    var h = String(Math.floor(abs / 60)).padStart(2, '0');
+    var m = String(abs % 60).padStart(2, '0');
+    option.textContent = 'UTC' + sign + h + ':' + m;
+    tzOffsetSelect.appendChild(option);
+  }
+}
+
+function getOffsetMinutes(timezoneName, date) {
+  try {
+    var utcStr = date.toLocaleString('en-US', { timeZone: 'UTC' });
+    var tzStr = date.toLocaleString('en-US', { timeZone: timezoneName });
+    return Math.round((new Date(tzStr) - new Date(utcStr)) / 60000);
+  } catch (e) {
+    return 0;
+  }
+}
+
+function setTzSelectFromTimezone(timezoneName, date) {
+  var offsetMin = getOffsetMinutes(timezoneName, date);
+  // Snap to nearest 30 min
+  var snapped = Math.round(offsetMin / 30) * 30;
+  tzOffsetSelect.value = snapped;
+}
+
+populateTzSelect();
+
 const ZODIAC_SIGNS = [
   'Овен', 'Телец', 'Близнецы', 'Рак', 'Лев', 'Дева',
   'Весы', 'Скорпион', 'Стрелец', 'Козерог', 'Водолей', 'Рыбы'
@@ -121,18 +164,86 @@ lngInput.addEventListener('input', function () { syncDdToDms('lng'); });
   els.dir.addEventListener('change', function () { syncDmsToDd(coord); });
 });
 
-// Geoapify Geocoder Autocomplete
-// Получите бесплатный API-ключ на https://myprojects.geoapify.com/
-// 1. Зарегистрируйтесь → 2. Создайте проект → 3. Скопируйте ключ сюда:
-const GEOAPIFY_KEY = '118fc159180f4c908b36ff0473e93ac5';
+// Nominatim geocoder autocomplete
+const cityInput = document.getElementById('city-input');
+const citySuggestions = document.getElementById('city-suggestions');
 
-const cityContainer = document.getElementById('city-autocomplete');
-cityContainer.innerHTML = '';
-const cityAutocomplete = new autocomplete.GeocoderAutocomplete(cityContainer, GEOAPIFY_KEY, {
-  type: 'city',
-  lang: 'ru',
-  placeholder: 'Начните вводить город...',
-  limit: 5,
+function debounce(fn, delay) {
+  var timer;
+  return function () {
+    var args = arguments;
+    var ctx = this;
+    clearTimeout(timer);
+    timer = setTimeout(function () { fn.apply(ctx, args); }, delay);
+  };
+}
+
+function searchCity(query) {
+  var url = 'https://nominatim.openstreetmap.org/search'
+    + '?q=' + encodeURIComponent(query)
+    + '&format=jsonv2&addressdetails=1&limit=5'
+    + '&accept-language=ru&featuretype=city';
+  return fetch(url, {
+    headers: { 'User-Agent': 'AstroNataApp/1.0' }
+  }).then(function (r) { return r.json(); });
+}
+
+function showSuggestions(results) {
+  citySuggestions.innerHTML = '';
+  if (!results.length) {
+    citySuggestions.hidden = true;
+    return;
+  }
+  results.forEach(function (item) {
+    var li = document.createElement('li');
+    li.className = 'city-suggestion-item';
+    li.textContent = item.display_name;
+    li.addEventListener('click', function () { selectCity(item); });
+    citySuggestions.appendChild(li);
+  });
+  citySuggestions.hidden = false;
+}
+
+function hideSuggestions() {
+  citySuggestions.hidden = true;
+}
+
+function selectCity(item) {
+  cityInput.value = item.display_name;
+  hideSuggestions();
+  var lat = parseFloat(item.lat);
+  var lon = parseFloat(item.lon);
+  latInput.value = lat.toFixed(4);
+  lngInput.value = lon.toFixed(4);
+  syncDdToDms('lat');
+  syncDdToDms('lng');
+  selectedTimezone = typeof tzlookup === 'function' ? tzlookup(lat, lon) : null;
+  if (selectedTimezone) {
+    var dateStr = document.getElementById('birthdate').value;
+    var timeStr = document.getElementById('birthtime').value;
+    var refDate;
+    if (dateStr) {
+      var p = dateStr.split('-').map(Number);
+      var tp = timeStr ? timeStr.split(':').map(Number) : [12, 0];
+      refDate = new Date(p[0], p[1] - 1, p[2], tp[0], tp[1]);
+    } else {
+      refDate = new Date();
+    }
+    setTzSelectFromTimezone(selectedTimezone, refDate);
+  }
+  updateTzInfo();
+}
+
+var debouncedSearch = debounce(function () {
+  var q = cityInput.value.trim();
+  if (q.length < 2) { hideSuggestions(); return; }
+  searchCity(q).then(showSuggestions).catch(function () { hideSuggestions(); });
+}, 500);
+
+cityInput.addEventListener('input', debouncedSearch);
+
+document.addEventListener('click', function (e) {
+  if (!e.target.closest('#city-autocomplete')) hideSuggestions();
 });
 
 const tzInfo = document.getElementById('tz-info');
@@ -171,27 +282,13 @@ function updateTzInfo() {
   }
   var offset = getUtcOffset(selectedTimezone, date);
   tzInfo.textContent = selectedTimezone + (offset ? ' (' + offset + ')' : '');
+  // Update select to match DST-aware offset
+  setTzSelectFromTimezone(selectedTimezone, date);
 }
 
 document.getElementById('birthdate').addEventListener('change', updateTzInfo);
 document.getElementById('birthtime').addEventListener('change', updateTzInfo);
 
-cityAutocomplete.on('select', function (location) {
-  if (location) {
-    latInput.value = parseFloat(location.properties.lat).toFixed(4);
-    lngInput.value = parseFloat(location.properties.lon).toFixed(4);
-    syncDdToDms('lat');
-    syncDdToDms('lng');
-    selectedTimezone = location.properties.timezone ? location.properties.timezone.name : null;
-  } else {
-    latInput.value = '';
-    lngInput.value = '';
-    syncDdToDms('lat');
-    syncDdToDms('lng');
-    selectedTimezone = null;
-  }
-  updateTzInfo();
-});
 
 form.addEventListener('submit', function (e) {
   e.preventDefault();
@@ -210,8 +307,33 @@ form.addEventListener('submit', function (e) {
     return;
   }
 
-  const [year, month, date] = dateStr.split('-').map(Number);
-  const [hour, minute] = timeStr.split(':').map(Number);
+  var [year, month, date] = dateStr.split('-').map(Number);
+  var [hour, minute] = timeStr.split(':').map(Number);
+
+  // Корректировка времени если offset отличается от координатного
+  var coordsTz = typeof tzlookup === 'function' ? tzlookup(lat, lng) : null;
+  if (tzOffsetSelect.value === 'auto') {
+    // Auto mode: determine offset from coordinates, no adjustment needed
+    if (coordsTz) {
+      var userDate = new Date(year, month - 1, date, hour, minute);
+      var selectedOffsetMin = getOffsetMinutes(coordsTz, userDate);
+    }
+  } else {
+    var selectedOffsetMin = parseInt(tzOffsetSelect.value);
+    if (coordsTz) {
+      var userDate = new Date(year, month - 1, date, hour, minute);
+      var coordsOffsetMin = getOffsetMinutes(coordsTz, userDate);
+      if (coordsOffsetMin !== selectedOffsetMin) {
+        var diffMs = (coordsOffsetMin - selectedOffsetMin) * 60000;
+        var adjusted = new Date(userDate.getTime() + diffMs);
+        year = adjusted.getFullYear();
+        month = adjusted.getMonth() + 1;
+        date = adjusted.getDate();
+        hour = adjusted.getHours();
+        minute = adjusted.getMinutes();
+      }
+    }
+  }
 
   const origin = new Origin({
     year: year,

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Натальная карта</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="https://unpkg.com/@geoapify/geocoder-autocomplete/styles/minimal.css">
+
 </head>
 <body>
   <div class="container">
@@ -23,9 +23,14 @@
           </div>
         </div>
         <div class="field">
+          <label for="tz-offset">Часовой пояс</label>
+          <select id="tz-offset"></select>
+        </div>
+        <div class="field">
           <label>Город</label>
           <div id="city-autocomplete" style="position: relative;">
-            <input class="city-loading" disabled placeholder="Загрузка поиска городов...">
+            <input type="text" id="city-input" placeholder="Начните вводить город..." autocomplete="off">
+            <ul id="city-suggestions" class="city-suggestions" hidden></ul>
           </div>
           <span id="tz-info" class="tz-info"></span>
         </div>
@@ -68,7 +73,8 @@
         <ul class="footer-badge__list">
           <li><a href="https://github.com/0xStarcat/CircularNatalHoroscopeJS" target="_blank" rel="noopener">CircularNatalHoroscopeJS</a> — расчёт положений планет, домов и аспектов</li>
           <li><a href="https://github.com/Kibo/AstroChart" target="_blank" rel="noopener">AstroChart</a> — SVG-визуализация натальной карты</li>
-          <li><a href="https://www.geoapify.com/" target="_blank" rel="noopener">Geoapify</a> — геокодинг и автодополнение городов (бесплатно до 3 000 запросов в день)</li>
+          <li><a href="https://nominatim.openstreetmap.org/" target="_blank" rel="noopener">Nominatim / OpenStreetMap</a> — геокодинг и автодополнение городов</li>
+          <li><a href="https://github.com/darkskyapp/tz-lookup" target="_blank" rel="noopener">tz-lookup</a> — офлайн-определение часового пояса по координатам</li>
         </ul>
       </div>
     </div>
@@ -82,7 +88,7 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/@geoapify/geocoder-autocomplete/dist/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tz-lookup@6.1.25/tz.js"></script>
   <script src="libs/AstroChart/project/build/astrochart.js"></script>
   <script src="libs/CircularNatalHoroscopeJS/dist/index.js"></script>
   <script src="js/app.js"></script>
